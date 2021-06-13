@@ -7,18 +7,24 @@ import com.lowagie.text.alignment.VerticalAlignment;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.io.*;
 
 @Service
 public class PdfServicio  {
 
-    public void exportarPdf(String mail, String total) throws FileNotFoundException {
-
-        System.out.println("Inicializando pdf");
+    public void exportarPdf(String mail, String total, Boolean encriptacion) throws FileNotFoundException {
+        
         Document documento = new Document(PageSize.LETTER);
 
-        PdfWriter.getInstance(documento,new FileOutputStream(new File("/home/luis/Escritorio/Proyectos Spring Boot/MailProyect/MailProyect/src/main/resources/static/"+mail+".pdf")));
+
+        PdfWriter writer = PdfWriter.getInstance(documento,new FileOutputStream(new File("/home/luis/Escritorio/Proyectos Spring Boot/ExperimentalSpringProyects/MailProyect/MailProyect/src/main/resources/static/"+mail+".pdf")));
+
+        //Encriptacion ====================================
+        if (encriptacion){
+            writer.setEncryption("USER_PASSWORD".getBytes(), "OWNER_PASSWORD".getBytes(), PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_128);
+        }
 
         //=================================================
 
@@ -67,7 +73,16 @@ public class PdfServicio  {
 
 
         documento.close();
-
+        writer.close();
     }
+    /*
+    Para poder encriptar hace falta esta dependencia
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>1.61</version>
+    </dependency>
+     */
+
 
 }

@@ -21,7 +21,7 @@ public class MailServicio {
 
     @Transactional
     public void enviarMensaje(String correo, String asunto, String mensaje) throws MessagingException, UnsupportedEncodingException, FileNotFoundException {
-        enviarMensajeConArchivoAdjuntoPDF(correo,asunto,mensaje);
+        enviarMensajeConArchivoAdjuntoPDFEncriptado(correo,asunto,mensaje);
     }
 
     public void enviarMensajeSimple(String correo, String asunto, String mensaje) {
@@ -93,11 +93,30 @@ public class MailServicio {
         helper.setSubject(asunto);
         helper.setText("<H2>"+mensaje+"</H2>",true);
 
-        pdfServicio.exportarPdf(asunto,"30000");
+        pdfServicio.exportarPdf(asunto,"30000",false);
 
         helper.addAttachment("JeissonTest.pdf",new ClassPathResource("static/"+asunto+".pdf"));
 
         javaMailSender.send(mensajeEditado);
 
     }
+
+    //https://knpcode.com/java-programs/password-protected-pdf-using-openpdf-java/
+    public void enviarMensajeConArchivoAdjuntoPDFEncriptado(String correo, String asunto, String mensaje)
+            throws MessagingException, UnsupportedEncodingException, FileNotFoundException {
+
+        MimeMessage mensajeEditado = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mensajeEditado,true);
+
+        helper.setFrom("quda.maquillaje@gmail.com","Equipo de ventas");
+        helper.setTo(correo);
+        helper.setSubject(asunto);
+        helper.setText("<H2>"+mensaje+"</H2>",true);
+
+        pdfServicio.exportarPdf(asunto,"30000",true);
+        helper.addAttachment(asunto+".pdf",new ClassPathResource("static/"+asunto+".pdf"));
+        javaMailSender.send(mensajeEditado);
+    }
+
+
 }
